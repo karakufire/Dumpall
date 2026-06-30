@@ -106,6 +106,10 @@ public class Dump {
                             .sorted(ResourceLocation::compareNamespaced).distinct().toList())
                     .build(ResourceLocation.tryParse("minecraft:function"), server.getFunctions()));
 
+            add(KeyedRegistry.Factory.newInstance((ServerFunctionManager manager) -> StreamSupport.stream(manager.getTagNames().spliterator(), false)
+                            .sorted(ResourceLocation::compareNamespaced).distinct().toList())
+                    .build(ResourceLocation.tryParse("minecraft:tags/function"), server.getFunctions()));
+
             add(KeyedRegistry.Factory.newInstance((ItemModifierManager manager) -> manager.getKeys().stream()
                             .sorted(ResourceLocation::compareNamespaced).distinct().toList())
                     .build(ResourceLocation.tryParse("minecraft:item_modifier"), server.getItemModifierManager()));

@@ -2,19 +2,15 @@ package krk.dumpall;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.ServerFunctionManager;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraftforge.registries.ForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
+import net.minecraft.world.level.storage.loot.LootDataManager;
+import net.minecraft.world.level.storage.loot.LootDataType;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -43,7 +39,6 @@ public class Dump {
                     .sorted((a, b) -> Objects.compare(a.key().location(), b.key().location(), ResourceLocation::compareNamespaced))
                     .map(r -> registryFactory.build(r.key().location(), r.value()))
                     .toList());
-            // Server Tag Registries
             addAll(server.registries().compositeAccess().registries()
                     .sorted((a, b) -> Objects.compare(a.key().location(), b.key().location(), ResourceLocation::compareNamespaced))
                     .map(r -> tagRegsFactory.build(r.key().location().withPrefix("tags/"), r.value().getTagNames().toList()))
@@ -53,11 +48,25 @@ public class Dump {
                     .sorted((a, b) -> Objects.compare(a.key().location(), b.key().location(), ResourceLocation::compareNamespaced))
                     .map(r -> registryFactory.build(r.key().location(), r))
                     .toList());
-            // Builtin Tag Registries
             addAll(BuiltInRegistries.REGISTRY.stream()
                     .sorted((a, b) -> Objects.compare(a.key().location(), b.key().location(), ResourceLocation::compareNamespaced))
                     .map(r -> tagRegsFactory.build(r.key().location().withPrefix("tags/"), r.getTagNames().toList()))
                     .toList());
+            // Server data
+            add(KeyedRegistry.Factory.newInstance((ServerAdvancementManager manager) -> manager.getAllAdvancements().stream().map(Advancement::getId).sorted(ResourceLocation::compareNamespaced).toList())
+                    .build(ResourceLocation.fromNamespaceAndPath("minecraft", "advancement"), server.getAdvancements()));
+            add(KeyedRegistry.Factory.newInstance((ServerFunctionManager manager) -> StreamSupport.stream(manager.getFunctionNames().spliterator(), false).sorted(ResourceLocation::compareNamespaced).toList())
+                    .build(ResourceLocation.fromNamespaceAndPath("minecraft", "function"), server.getFunctions()));
+            add(KeyedRegistry.Factory.newInstance((ServerFunctionManager manager) -> StreamSupport.stream(manager.getTagNames().spliterator(), false).sorted(ResourceLocation::compareNamespaced).toList())
+                    .build(ResourceLocation.fromNamespaceAndPath("minecraft", "tags/function"), server.getFunctions()));
+            add(KeyedRegistry.Factory.newInstance((LootDataManager manager) -> manager.getKeys(LootDataType.MODIFIER).stream().sorted(ResourceLocation::compareNamespaced).toList())
+                    .build(ResourceLocation.fromNamespaceAndPath("minecraft", "item_modifier"), server.getLootData()));
+            add(KeyedRegistry.Factory.newInstance((LootDataManager manager) -> manager.getKeys(LootDataType.TABLE).stream().sorted(ResourceLocation::compareNamespaced).toList())
+                    .build(ResourceLocation.fromNamespaceAndPath("minecraft", "loot_table"), server.getLootData()));
+            add(KeyedRegistry.Factory.newInstance((LootDataManager manager) -> manager.getKeys(LootDataType.PREDICATE).stream().sorted(ResourceLocation::compareNamespaced).toList())
+                    .build(ResourceLocation.fromNamespaceAndPath("minecraft", "predicate"), server.getLootData()));
+            add(KeyedRegistry.Factory.newInstance((RecipeManager manager) -> manager.getRecipeIds().sorted(ResourceLocation::compareNamespaced).toList())
+                    .build(ResourceLocation.fromNamespaceAndPath("minecraft", "recipe"), server.getRecipeManager()));
         }};
 
         var summary = registries.stream().map(r -> String.format("%s\t%s", r.key, r.entries().size())).collect(Collectors.joining("\n"));
@@ -129,6 +138,5 @@ public class Dump {
                 return new Factory<>(enumerator);
             }
         }
-
     }
 }

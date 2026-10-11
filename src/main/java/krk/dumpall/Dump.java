@@ -77,7 +77,11 @@ public class Dump {
     }
 
     private static void dump(KeyedRegistry<?> registry) {
-        var text = registry.entries().stream().map(ResourceLocation::toString).collect(Collectors.joining("\n"));
+        var text = registry.entries()
+                .stream()
+                .sorted(ResourceLocation::compareNamespaced)
+                .map(ResourceLocation::toString)
+                .collect(Collectors.joining("\n"));
         var path = Paths.get(registry.key.getNamespace(), registry.key.getPath() + ".tsv");
         dump(text, path);
     }

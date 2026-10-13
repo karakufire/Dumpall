@@ -1,6 +1,7 @@
 package krk.dumpall;
 
 import com.mojang.logging.LogUtils;
+import krk.dumpall.core.CommandDumpall;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;

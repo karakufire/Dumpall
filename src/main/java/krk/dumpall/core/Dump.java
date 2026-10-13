@@ -1,5 +1,6 @@
-package krk.dumpall;
+package krk.dumpall.core;
 
+import krk.dumpall.Main;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

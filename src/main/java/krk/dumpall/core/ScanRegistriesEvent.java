@@ -2,6 +2,7 @@ package krk.dumpall.core;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -15,15 +16,25 @@ import java.util.stream.Collectors;
  */
 public class ScanRegistriesEvent extends Event {
 
+    private final MinecraftServer server;
     private final Map<ResourceLocation, RegistryWrapper<?>> registries;
 
-    public ScanRegistriesEvent() {
+    public ScanRegistriesEvent(MinecraftServer server) {
+        this.server = server;
         this.registries = new HashMap<>();
     }
 
     /**
+     * Context server
+     * @return {@link MinecraftServer} instance
+     */
+    public MinecraftServer getServer() {
+        return server;
+    }
+
+    /**
      * Add Registry instance for listing.<br>
-     * Normal and Tags will be added in this method. Tags' one is added as {@code example:tags/<registry_name>}
+     * Both of normal and tags will be added in this method. Tags' one is added as {@code example:tags/<registry_name>}
      *
      * @param registry Registry instance
      */

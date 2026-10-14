@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.loot.PredicateManager;
 
 import java.util.stream.StreamSupport;
 
-public final class MinecraftRegisterScanner {
+public final class MinecraftRegistryScanner {
     public static void collectRegistries(ScanRegistriesEvent event) {
         event.getServer().registryAccess().registries()
                 .map(RegistryAccess.RegistryEntry::value)

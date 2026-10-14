@@ -2,11 +2,12 @@ package krk.dumpall;
 
 import com.mojang.logging.LogUtils;
 import krk.dumpall.core.CommandDumpall;
-import krk.dumpall.module.MinecraftRegisterScanner;
+import krk.dumpall.module.ApotheosisRegistryScanner;
+import krk.dumpall.module.MinecraftRegistryScanner;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -32,6 +33,10 @@ public class Main {
     }
 
     public void loadModules() {
-        MinecraftForge.EVENT_BUS.addListener(MinecraftRegisterScanner::collectRegistries);
+        MinecraftForge.EVENT_BUS.addListener(MinecraftRegistryScanner::collectRegistries);
+        if (ModList.get().isLoaded("apotheosis")) {
+            LOGGER.info("detect Apotheosis");
+            MinecraftForge.EVENT_BUS.addListener(ApotheosisRegistryScanner::collectRegistries);
+        }
     }
 }

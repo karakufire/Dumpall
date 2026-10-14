@@ -2,8 +2,8 @@ package krk.dumpall;
 
 import com.mojang.logging.LogUtils;
 import krk.dumpall.core.CommandDumpall;
-import krk.dumpall.module.ApotheosisRegisterScanner;
-import krk.dumpall.module.MinecraftRegisterScanner;
+import krk.dumpall.module.ApotheosisRegistryScanner;
+import krk.dumpall.module.MinecraftRegistryScanner;
 import krk.dumpall.module.PlaceboRegistryScanner;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -35,14 +35,14 @@ public class Main {
 
     private void loadModules() {
         LOGGER.info("Loading Dumpall Modules");
-        MinecraftForge.EVENT_BUS.addListener(MinecraftRegisterScanner::collectRegistries);
+        MinecraftForge.EVENT_BUS.addListener(MinecraftRegistryScanner::collectRegistries);
         if (ModList.get().isLoaded("placebo")) {
             LOGGER.info("detect Placebo");
             MinecraftForge.EVENT_BUS.addListener(PlaceboRegistryScanner::collectRegistries);
         }
         if (ModList.get().isLoaded("apotheosis")) {
             LOGGER.info("detect Apotheosis");
-            MinecraftForge.EVENT_BUS.addListener(ApotheosisRegisterScanner::collectRegistries);
+            MinecraftForge.EVENT_BUS.addListener(ApotheosisRegistryScanner::collectRegistries);
         }
     }
 }

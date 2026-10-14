@@ -15,7 +15,7 @@ import krk.dumpall.core.ScanRegistriesEvent;
 import krk.dumpall.core.Utils;
 import net.minecraft.resources.ResourceLocation;
 
-public final class ApotheosisRegisterScanner {
+public final class ApotheosisRegistryScanner {
 
     public static void collectRegistries(ScanRegistriesEvent event) {
         event.addRegistry(rlApoth("affixes"), AffixRegistry.INSTANCE, DynamicRegistry::getKeys);

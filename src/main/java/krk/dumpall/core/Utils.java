@@ -30,7 +30,7 @@ public final class Utils {
         return (T param) -> function.apply(param, supplier.get());
     }
 
-    public static ResourceLocation rl(String path0, String... paths) {
+    public static ResourceLocation mcrl(String path0, String... paths) {
         return rl("minecraft", path0, paths);
     }
 

@@ -1,11 +1,9 @@
 package krk.dumpall.core;
 
 import krk.dumpall.Main;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tags.TagKey;
+import net.neoforged.neoforge.common.NeoForge;
 //import net.minecraft.world.level.storage.loot.LootDataManager;
 
 import java.io.BufferedWriter;
@@ -15,10 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
-import java.util.TreeSet;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Dump {
@@ -28,52 +23,26 @@ public class Dump {
     }
 
     public static void run(MinecraftServer server) {
-        var registryFactory = KeyedRegistry.Factory.newInstance((Registry<?> registry) -> registry.keySet().stream().toList());
-        var tagRegsFactory = KeyedRegistry.Factory.newInstance((Collection<? extends TagKey<?>> tagKeys) -> tagKeys.stream().map(TagKey::location).toList());
+        var event = new ScanRegistriesEvent(server);
+        NeoForge.EVENT_BUS.post(event);
+        var registries = event.result();
 
-        var registries = new TreeSet<KeyedRegistry<?>>() {{
-            // Server Registries
-            addAll(server.registries().compositeAccess().registries()
-                    .sorted((a, b) -> Objects.compare(a.key().location(), b.key().location(), ResourceLocation::compareNamespaced))
-                    .map(r -> registryFactory.build(r.key().location(), r.value()))
-                    .toList());
-            addAll(server.registries().compositeAccess().registries()
-                    .sorted((a, b) -> Objects.compare(a.key().location(), b.key().location(), ResourceLocation::compareNamespaced))
-                    .map(r -> tagRegsFactory.build(r.key().location().withPrefix("tags/"), r.value().getTagNames().toList()))
-                    .toList());
-            // Builtin Registries
-            addAll(BuiltInRegistries.REGISTRY.stream()
-                    .sorted((a, b) -> Objects.compare(a.key().location(), b.key().location(), ResourceLocation::compareNamespaced))
-                    .map(r -> registryFactory.build(r.key().location(), r))
-                    .toList());
-            addAll(BuiltInRegistries.REGISTRY.stream()
-                    .sorted((a, b) -> Objects.compare(a.key().location(), b.key().location(), ResourceLocation::compareNamespaced))
-                    .map(r -> tagRegsFactory.build(r.key().location().withPrefix("tags/"), r.getTagNames().toList()))
-                    .toList());
-            // Reloadable Registries
-            addAll(server.reloadableRegistries().get().registries()
-                    .sorted((a, b) -> a.key().location().compareNamespaced(b.key().location()))
-                    .map(r -> registryFactory.build(r.key().location(), r.value()))
-                    .toList());
-            addAll(server.reloadableRegistries().get().registries()
-                    .sorted((a, b) -> a.key().location().compareNamespaced(b.key().location()))
-                    .map(r -> tagRegsFactory.build(r.key().location().withPrefix("tags/"), r.value().getTagNames().toList()))
-                    .toList());
-        }};
-
-        var summary = registries.stream().map(r -> String.format("%s\t%s", r.key, r.entries().size())).collect(Collectors.joining("\n"));
+        var summary = registries.entrySet().stream()
+                .sorted((a, b) -> Objects.compare(a.getKey(), b.getKey(), ResourceLocation::compareNamespaced))
+                .map(r -> String.format("%s\t%s", r.getKey(), r.getValue().size()))
+                .collect(Collectors.joining("\n"));
         dump(summary, Paths.get("summary.tsv"));
-        for (var registry : registries) {
-            dump(registry);
+        for (var registry : registries.entrySet()) {
+            dump(registry.getKey(), registry.getValue());
         }
     }
 
-    private static void dump(KeyedRegistry<?> registry) {
-        var text = registry.entries().stream()
+    private static void dump(ResourceLocation location, Collection<ResourceLocation> content) {
+        var text = content.stream()
                 .sorted(ResourceLocation::compareNamespaced)
                 .map(ResourceLocation::toString)
                 .collect(Collectors.joining("\n"));
-        var path = Paths.get(registry.key.getNamespace(), registry.key.getPath() + ".tsv");
+        var path = Paths.get(location.getNamespace(), String.format("%s.tsv", location.getPath()));
         dump(text, path);
     }
 
@@ -89,49 +58,6 @@ public class Dump {
             writer.flush();
         } catch (IOException e) {
             Main.LOGGER.error("", e);
-        }
-    }
-
-    private static abstract class KeyedRegistry<R> implements Comparable<KeyedRegistry<R>> {
-        public final ResourceLocation key;
-        public final R registry;
-
-        private KeyedRegistry(ResourceLocation key, R registry) {
-            this.key = key;
-            this.registry = registry;
-        }
-
-        public abstract List<ResourceLocation> entries();
-
-        @Override
-        public String toString() {
-            return String.format("KeyedRegistry[%s]:%s", key, registry.hashCode());
-        }
-
-        @Override
-        public int compareTo(KeyedRegistry<R> o) {
-            return this.key.compareNamespaced(o.key);
-        }
-
-        public static class Factory<R> {
-            private final Function<R, List<ResourceLocation>> enumerator;
-
-            private Factory(Function<R, List<ResourceLocation>> enumerator) {
-                this.enumerator = enumerator;
-            }
-
-            public KeyedRegistry<R> build(ResourceLocation key, R registry) {
-                return new KeyedRegistry<>(key, registry) {
-                    @Override
-                    public List<ResourceLocation> entries() {
-                        return enumerator.apply(registry);
-                    }
-                };
-            }
-
-            public static <R> Factory<R> newInstance(Function<R, List<ResourceLocation>> enumerator) {
-                return new Factory<>(enumerator);
-            }
         }
     }
 }

@@ -27,6 +27,12 @@ sourceSets.main.resources {
 
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
+    maven {
+        url 'https://maven.blamejared.com'
+    }
+    maven {
+        url "https://cursemaven.com"
+    }
 }
 
 base {
@@ -103,6 +109,7 @@ dependencies {
     // And its provides the option to then use net.minecraft as the group, and one of; client, server or joined as the module name, plus the game version as version.
     // For all intends and purposes: You can treat this dependency as if it is a normal library you would use.
     implementation "net.neoforged:neoforge:${neo_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -118,6 +125,12 @@ dependencies {
 
     // Example mod dependency using a file as dependency
     // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
+    runtimeOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
+    implementation "curse.maven:placebo-283644:9153039"
+    implementation "curse.maven:apothic-attributes-898963:9006294"
+    implementation "curse.maven:apothic-enchanting-1063926:9095862"
+    implementation "curse.maven:apothic-spawners-986583:8469405"
+    implementation "curse.maven:apotheosis-313970:8993983"
 
     // Example project dependency using a sister or child project:
     // implementation project(":myproject")

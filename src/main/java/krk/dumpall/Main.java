@@ -2,6 +2,7 @@ package krk.dumpall;
 
 import com.mojang.logging.LogUtils;
 import krk.dumpall.core.CommandDumpall;
+import krk.dumpall.module.MinecraftRegisterScanner;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -20,6 +21,7 @@ public class Main {
         IEventBus eventBus = context.getModEventBus();
         eventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        this.loadModules();
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -29,6 +31,7 @@ public class Main {
         CommandDumpall.register(e.getDispatcher());
     }
 
-    private void onStartServer(ServerStartingEvent event) {
+    public void loadModules() {
+        MinecraftForge.EVENT_BUS.addListener(MinecraftRegisterScanner::collectRegistries);
     }
 }

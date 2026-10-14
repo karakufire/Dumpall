@@ -1,16 +1,12 @@
-package krk.dumpall;
+package krk.dumpall.core;
 
-import net.minecraft.advancements.AdvancementHolder;
+import krk.dumpall.Main;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerAdvancementManager;
-import net.minecraft.server.ServerFunctionManager;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.crafting.RecipeManager;
 //import net.minecraft.world.level.storage.loot.LootDataManager;
-import net.minecraft.world.level.storage.loot.LootDataType;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -24,7 +20,6 @@ import java.util.Objects;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class Dump {
     static Path DUMP_OUTPUT = Path.of("./dumpall");

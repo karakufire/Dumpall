@@ -1,6 +1,7 @@
 package krk.dumpall;
 
 import com.mojang.logging.LogUtils;
+import krk.dumpall.core.CommandDumpall;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;

@@ -18,26 +18,22 @@ import net.minecraft.resources.ResourceLocation;
 public final class ApotheosisRegistryScanner {
 
     public static void collectRegistries(ScanRegistriesEvent event) {
-        event.addRegistry(rlApoth("affixes"), AffixRegistry.INSTANCE, DynamicRegistry::getKeys);
+        event.addRegistry(Apotheosis.loc("affixes"), AffixRegistry.INSTANCE, DynamicRegistry::getKeys);
 
-        event.addRegistry(rlApoth("bosses"), BossRegistry.INSTANCE, DynamicRegistry::getKeys);
+        event.addRegistry(Apotheosis.loc("bosses"), BossRegistry.INSTANCE, DynamicRegistry::getKeys);
 
-        event.addRegistry(rlApoth("minibosses"), MinibossRegistry.INSTANCE, DynamicRegistry::getKeys);
+        event.addRegistry(Apotheosis.loc("minibosses"), MinibossRegistry.INSTANCE, DynamicRegistry::getKeys);
 
-        event.addRegistry(rlApoth("affix_loot_entries"), AffixLootRegistry.INSTANCE, DynamicRegistry::getKeys);
+        event.addRegistry(Apotheosis.loc("affix_loot_entries"), AffixLootRegistry.INSTANCE, DynamicRegistry::getKeys);
 
-        event.addRegistry(rlApoth("rarities"), RarityRegistry.INSTANCE, DynamicRegistry::getKeys);
+        event.addRegistry(Apotheosis.loc("rarities"), RarityRegistry.INSTANCE, DynamicRegistry::getKeys);
 
-        event.addRegistry(rlApoth("gems"), GemRegistry.INSTANCE, DynamicRegistry::getKeys);
+        event.addRegistry(Apotheosis.loc("gems"), GemRegistry.INSTANCE, DynamicRegistry::getKeys);
 
-        event.addRegistry(rlApoth("rogue_spawners"), RogueSpawnerRegistry.INSTANCE, DynamicRegistry::getKeys);
+        event.addRegistry(Apotheosis.loc("rogue_spawners"), RogueSpawnerRegistry.INSTANCE, DynamicRegistry::getKeys);
 
-        event.addRegistry(rlApoth("enchanting_stats"), EnchantingStatRegistry.INSTANCE, DynamicRegistry::getKeys);
+        event.addRegistry(Apotheosis.loc("enchanting_stats"), EnchantingStatRegistry.INSTANCE, DynamicRegistry::getKeys);
 
-        event.addRegistry(rlApoth("wanderer_trades"), WandererTradesRegistry.INSTANCE, DynamicRegistry::getKeys);
-    }
-
-    private static ResourceLocation rlApoth(String path, String... paths) {
-        return Utils.rl(Apotheosis.MODID, path, paths);
+        event.addRegistry(Apotheosis.loc("wanderer_trades"), WandererTradesRegistry.INSTANCE, DynamicRegistry::getKeys);
     }
 }
